@@ -1,4 +1,7 @@
+"use client";
 import Header from "../../components/Header";
+import KPICards from "./KPICards";
+import CollaborateursTable from "./CollaborateursTable";
 import styles from "../dashboard.module.css";
 
 export default function EtpPage() {
@@ -6,7 +9,15 @@ export default function EtpPage() {
     <div className={styles.container}>
       <Header />
       <main className={styles.main}>
-        {/* Page ETP vide */}
+        <div className={styles.content}>
+          <h1 className={styles.pageTitle}>Gestion des ETP</h1>
+          <p className={styles.pageDescription}>
+            Inventaire des collaborateurs et indicateurs de performance
+          </p>
+          
+          <KPICards />
+          <CollaborateursTable />
+        </div>
       </main>
     </div>
   );
