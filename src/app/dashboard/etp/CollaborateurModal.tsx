@@ -59,7 +59,7 @@ export default function CollaborateurModal({
     }
 
     if (formData.etp < 0 || formData.etp > 1) {
-      newErrors.etp = "L'ETP doit être entre 0 et 1";
+      newErrors.etp = "L&apos;ETP doit être entre 0 et 1";
     }
 
     setErrors(newErrors);

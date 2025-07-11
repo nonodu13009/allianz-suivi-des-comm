@@ -4,7 +4,7 @@ import { doc, updateDoc, collection } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import styles from "./EditMonthModal.module.css";
 
-interface MonthData {
+export interface MonthData {
   iard: number;
   vie: number;
   courtage: number;

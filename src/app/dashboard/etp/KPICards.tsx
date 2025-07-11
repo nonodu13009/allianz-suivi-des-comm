@@ -9,7 +9,8 @@ export default function KPICards() {
   const [kpiData, setKpiData] = useState<KPIData>({
     etpTotal: 0,
     caParEtp: 0,
-    caAnnuelExtrapole: 0
+    caAnnuelExtrapole: 0,
+    nombreCollaborateurs: 0,
   });
   const [loading, setLoading] = useState(true);
 
@@ -40,10 +41,6 @@ export default function KPICards() {
     loadKPIs();
   }, []);
 
-  const formatNumber = (value: number) => {
-    return value.toLocaleString("fr-FR", { maximumFractionDigits: 0 });
-  };
-
   const formatCurrency = (value: number) => {
     return value.toLocaleString("fr-FR", { 
       style: "currency", 
@@ -73,7 +70,7 @@ export default function KPICards() {
           <h3 className={styles.title}>ETP Total</h3>
           <div className={styles.value}>{kpiData.etpTotal.toFixed(2)}</div>
           <p className={styles.description}>
-            Équivalent temps plein de l'agence
+            Équivalent temps plein de l&apos;agence
           </p>
         </div>
       </div>
@@ -86,7 +83,7 @@ export default function KPICards() {
           <h3 className={styles.title}>Collaborateurs</h3>
           <div className={styles.value}>{kpiData.nombreCollaborateurs}</div>
           <p className={styles.description}>
-            Nombre de personnes dans l'agence
+            Nombre de personnes dans l&apos;agence
           </p>
         </div>
       </div>

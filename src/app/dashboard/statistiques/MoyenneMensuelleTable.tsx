@@ -8,19 +8,14 @@ const MONTHS = [
   "juillet", "aout", "septembre", "octobre", "novembre", "decembre"
 ];
 
-const MONTHS_LABELS = {
-  janvier: "Janvier",
-  fevrier: "Février",
-  mars: "Mars",
-  avril: "Avril",
-  mai: "Mai",
-  juin: "Juin",
-  juillet: "Juillet",
-  aout: "Août",
-  septembre: "Septembre",
-  octobre: "Octobre",
-  novembre: "Novembre",
-  decembre: "Décembre"
+type CommissionMonth = {
+  iard?: number;
+  vie?: number;
+  courtage?: number;
+  profits?: number;
+  charges?: number;
+  prel_julien?: number;
+  prel_jeanmichel?: number;
 };
 
 function formatMoney(val: number) {
@@ -29,7 +24,7 @@ function formatMoney(val: number) {
 }
 
 export default function MoyenneMensuelleTable({ dataByYear, years }: {
-  dataByYear: Record<string, any>;
+  dataByYear: Record<string, Record<string, unknown>>;
   years: string[];
 }) {
   // Calcul des stats pour chaque année
@@ -38,7 +33,7 @@ export default function MoyenneMensuelleTable({ dataByYear, years }: {
     let total = 0;
     let moisValides = 0;
     MONTHS.forEach(mois => {
-      const d = yearData[mois] || {};
+      const d = (yearData[mois] || {}) as CommissionMonth;
       // Un mois est validé s'il y a au moins une commission ou des charges
       const hasData = (d.iard || 0) !== 0 || (d.vie || 0) !== 0 || (d.courtage || 0) !== 0 || (d.profits || 0) !== 0 || (d.charges || 0) !== 0;
       if (hasData) {

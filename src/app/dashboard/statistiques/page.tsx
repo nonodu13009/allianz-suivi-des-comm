@@ -13,13 +13,22 @@ const MONTHS = [
   "juillet", "aout", "septembre", "octobre", "novembre", "decembre"
 ];
 
+// Définition du type pour un mois de commissions
+interface CommissionMonth {
+  iard: number;
+  vie: number;
+  courtage: number;
+  profits: number;
+  charges: number;
+}
+
 export default function StatistiquesPage() {
   const getVisibleYears = () => {
     const currentYear = new Date().getFullYear();
     return Array.from({ length: 4 }, (_, i) => (currentYear - i).toString());
   };
 
-  const [dataByYear, setDataByYear] = useState<Record<string, any>>({});
+  const [dataByYear, setDataByYear] = useState<Record<string, Record<string, CommissionMonth>>>({});
   const [loading, setLoading] = useState(true);
   const [years, setYears] = useState<string[]>(getVisibleYears());
 
@@ -32,14 +41,14 @@ export default function StatistiquesPage() {
         const currentYear = new Date().getFullYear();
         const visible = allYears.filter(y => parseInt(y) >= currentYear - 3);
         setYears(visible.length > 0 ? visible : getVisibleYears());
-        const data: Record<string, any> = {};
+        const data: Record<string, Record<string, CommissionMonth>> = {};
         querySnapshot.docs.forEach(doc => {
           if (visible.includes(doc.id)) {
-            data[doc.id] = doc.data();
+            data[doc.id] = doc.data() as Record<string, CommissionMonth>;
           }
         });
         setDataByYear(data);
-      } catch (e) {
+      } catch {
         setDataByYear({});
       }
       setLoading(false);
@@ -53,7 +62,7 @@ export default function StatistiquesPage() {
     let total = 0;
     let moisValides = 0;
     MONTHS.forEach(mois => {
-      const d = yearData[mois] || {};
+      const d = yearData[mois] || {iard:0,vie:0,courtage:0,profits:0,charges:0};
       const hasData = (d.iard || 0) !== 0 || (d.vie || 0) !== 0 || (d.courtage || 0) !== 0 || (d.profits || 0) !== 0 || (d.charges || 0) !== 0;
       if (hasData) {
         const totalMois = (d.iard || 0) + (d.vie || 0) + (d.courtage || 0) + (d.profits || 0);

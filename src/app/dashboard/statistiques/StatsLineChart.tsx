@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, CartesianGrid } from "recharts";
 import styles from "./StatsLineChart.module.css";
 
@@ -53,7 +53,7 @@ export default function StatsLineChart({
   years,
   defaultLine = "total"
 }: {
-  dataByYear: Record<string, any>; // { [year]: { [mois]: { ... } } }
+  dataByYear: Record<string, Record<string, unknown>>;
   years: string[];
   defaultLine?: string;
 }) {
@@ -62,9 +62,9 @@ export default function StatsLineChart({
   // Formatage des données pour Recharts :
   // [{ mois: "janvier", "2025": 1234, "2024": 2345, ... }, ...]
   const chartData = MONTHS.map((mois) => {
-    const entry: any = { mois: MONTHS_LABELS[mois] };
+    const entry: Record<string, unknown> = { mois: MONTHS_LABELS[mois as keyof typeof MONTHS_LABELS] };
     years.forEach((year) => {
-      const d = dataByYear[year]?.[mois] || {};
+      const d = dataByYear[year]?.[mois] as Record<string, number> || {};
       if (selectedLine === "total") {
         entry[year] = (d.iard || 0) + (d.vie || 0) + (d.courtage || 0) + (d.profits || 0);
       } else {
@@ -97,7 +97,7 @@ export default function StatsLineChart({
           <Tooltip
             contentStyle={{ background: "#fff", borderRadius: 12, boxShadow: "0 4px 16px rgba(102,126,234,0.10)", border: 'none', color: '#222' }}
             labelStyle={{ fontWeight: 700, color: '#764ba2' }}
-            formatter={(value: any) => formatMoney(value as number)}
+            formatter={(value: number) => formatMoney(value)}
             separator=": "
           />
           <Legend verticalAlign="top" height={36} iconType="circle" wrapperStyle={{ fontSize: 14, color: '#444' }} />

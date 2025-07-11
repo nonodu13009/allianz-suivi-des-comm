@@ -20,7 +20,7 @@ export default function LoginPage() {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       router.push("/dashboard");
-    } catch (err: any) {
+    } catch {
       setError("Identifiants invalides ou problème de connexion.");
     } finally {
       setLoading(false);

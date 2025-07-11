@@ -1,11 +1,12 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { collection, doc, getDoc, setDoc, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import Modal from "../components/Modal";
 import Notification from "../components/Notification";
 import EditMonthModal from "../components/EditMonthModal";
 import styles from "./TableCommissions.module.css";
+import type { MonthData } from "../components/EditMonthModal";
 
 const MONTHS = [
   "janvier", "fevrier", "mars", "avril", "mai", "juin",
@@ -45,12 +46,17 @@ const ROWS = [
   { key: "prel_jeanmichel", label: "Prélèvements Jean-Michel", rowClass: styles.prelRow },
 ];
 
-function formatMoney(val) {
+function formatMoney(val: number) {
   if (typeof val !== "number" || isNaN(val)) return "-";
   return val.toLocaleString("fr-FR", { maximumFractionDigits: 0 });
 }
 
-function sumYear(data, key, getTotal, getResultat) {
+function sumYear(
+  data: Record<string, Record<string, number>>,
+  key: string,
+  getTotal: (mois: string) => number,
+  getResultat: (mois: string) => number
+) {
   if (key === "total") {
     return MONTHS.reduce((acc, mois) => acc + getTotal(mois), 0);
   }
@@ -61,8 +67,8 @@ function sumYear(data, key, getTotal, getResultat) {
 }
 
 // Fonction pour créer une nouvelle année avec structure complète
-function createNewYearData(year: string) {
-  const newYearData: any = {};
+function createNewYearData() {
+  const newYearData: Record<string, Record<string, number>> = {};
   
   MONTHS.forEach(mois => {
     newYearData[mois] = {
@@ -81,7 +87,7 @@ function createNewYearData(year: string) {
 
 export default function TableCommissions() {
   const [year, setYear] = useState(new Date().getFullYear().toString());
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<Record<string, Record<string, number>> | null>(null);
   const [loading, setLoading] = useState(true);
   const [visibleYears, setVisibleYears] = useState<string[]>(getVisibleYears());
   const [archivedYears, setArchivedYears] = useState<string[]>([]);
@@ -91,11 +97,19 @@ export default function TableCommissions() {
   const [editModal, setEditModal] = useState<{
     isOpen: boolean;
     month: string;
-    data: any;
+    data: MonthData;
   }>({
     isOpen: false,
     month: "",
-    data: null
+    data: {
+      iard: 0,
+      vie: 0,
+      courtage: 0,
+      profits: 0,
+      charges: 0,
+      prel_julien: 0,
+      prel_jeanmichel: 0
+    },
   });
   const [notification, setNotification] = useState<{
     message: string;
@@ -129,7 +143,7 @@ export default function TableCommissions() {
     loadAllYears();
   }, []);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const docRef = doc(collection(db, "commissions"), year);
@@ -140,17 +154,17 @@ export default function TableCommissions() {
       setData(null);
     }
     setLoading(false);
-  };
+  }, [year]);
 
   useEffect(() => {
     fetchData();
-  }, [year]);
+  }, [fetchData]);
 
   const handleCreateNewYear = async () => {
     setActionLoading(true);
     try {
       const newYear = (new Date().getFullYear() + 1).toString();
-      const newYearData = createNewYearData(newYear);
+      const newYearData = createNewYearData();
       
       await setDoc(doc(collection(db, "commissions"), newYear), newYearData);
       
@@ -181,7 +195,7 @@ export default function TableCommissions() {
 
   const handleCellClick = (month: string) => {
     // S'assurer que les données existent ou créer une structure par défaut
-    const monthData = data?.[month] || {
+    const monthData = (data?.[month] as unknown as MonthData) || {
       iard: 0,
       vie: 0,
       courtage: 0,
@@ -212,11 +226,11 @@ export default function TableCommissions() {
   if (!data) return <div style={{color:'#fff',textAlign:'center',marginTop:'2rem'}}>Aucune donnée trouvée.</div>;
 
   // Calculs dynamiques
-  const getTotal = (mois) => {
+  const getTotal = (mois: string) => {
     const d = data[mois] || {};
     return (d.iard||0) + (d.vie||0) + (d.courtage||0) + (d.profits||0);
   };
-  const getResultat = (mois) => {
+  const getResultat = (mois: string) => {
     return getTotal(mois) - ((data[mois]?.charges)||0);
   };
 
@@ -273,7 +287,7 @@ export default function TableCommissions() {
           <tr>
             <th></th>
             {MONTHS.map((mois) => (
-              <th key={mois}>{MONTHS_LABELS[mois]} <span style={{fontWeight:400, fontSize:'0.95em', opacity:0.7}}>&euro;</span></th>
+              <th key={mois}>{MONTHS_LABELS[mois as keyof typeof MONTHS_LABELS]} <span style={{fontWeight:400, fontSize:'0.95em', opacity:0.7}}>&euro;</span></th>
             ))}
             <th className={styles.totalCol}>Total</th>
           </tr>

@@ -26,7 +26,7 @@ export default function NotFound() {
         <i className="fas fa-exclamation-triangle" style={{ fontSize: 48, color: "#ff6b6b", marginBottom: 16 }}></i>
         <h1 style={{ fontSize: 32, fontWeight: 700, color: "#764ba2", margin: 0 }}>Page introuvable</h1>
         <p style={{ color: "#555", margin: "1.2rem 0 2rem 0", textAlign: "center" }}>
-          Oups, la page que vous cherchez n'existe pas ou a été déplacée.
+          Oups, la page que vous cherchez n&apos;existe pas ou a été déplacée.
         </p>
         <Link href="/" style={{
           display: "inline-block",
@@ -45,7 +45,7 @@ export default function NotFound() {
           animation: "heartbeat 2s ease-in-out infinite"
         }}>
           <i className="fas fa-arrow-left" style={{ marginRight: 10 }}></i>
-          Retour à l'accueil
+          Retour à l&apos;accueil
         </Link>
       </div>
       <style>{`

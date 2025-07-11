@@ -26,8 +26,8 @@ export default function CollaborateursTable() {
     try {
       const data = await collaborateursService.getAll();
       setCollaborateurs(data);
-    } catch (err) {
-      console.error("Erreur lors du chargement des collaborateurs:", err);
+    } catch {
+      console.error("Erreur lors du chargement des collaborateurs");
       setError("Erreur lors du chargement des collaborateurs");
     }
     setLoading(false);
@@ -56,8 +56,8 @@ export default function CollaborateursTable() {
     try {
       await collaborateursService.delete(id);
       await loadCollaborateurs();
-    } catch (err) {
-      console.error("Erreur lors de la suppression:", err);
+    } catch {
+      console.error("Erreur lors de la suppression du collaborateur");
       setError("Erreur lors de la suppression du collaborateur");
     }
     setActionLoading(false);
@@ -73,10 +73,10 @@ export default function CollaborateursTable() {
       }
       await loadCollaborateurs();
       setModalOpen(false);
-    } catch (err) {
-      console.error("Erreur lors de la sauvegarde:", err);
+    } catch {
+      console.error("Erreur lors de la sauvegarde du collaborateur");
       setError("Erreur lors de la sauvegarde du collaborateur");
-      throw err;
+      throw new Error("Erreur lors de la sauvegarde du collaborateur");
     }
     setActionLoading(false);
   };
